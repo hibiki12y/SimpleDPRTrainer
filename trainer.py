@@ -1,6 +1,7 @@
 import transformers
 import torch
 import math
+import time
 from tqdm import tqdm
 from transformers.trainer_utils import speed_metrics, EvalLoopOutput
 
@@ -50,6 +51,7 @@ class DPRTrainer(transformers.Trainer):
     def evaluate(self, eval_dataset=None, ignore_keys=None, metric_key_prefix= "eval"):
         eval_dataset = eval_dataset if eval_dataset is not None else self.eval_dataset
         self.model.eval()
+        start_time = time.time()
         eval_dataloader = self.get_eval_dataloader(eval_dataset)
         total_loss = 0.0
         correct = 0

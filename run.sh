@@ -15,8 +15,8 @@ torchrun --nproc_per_node 1 main.py \
         --save_total_limit=1 \
         --evaluation_strategy=steps \
         --save_strategy=steps \
-        --eval_steps=3000 \
-        --save_steps=3000 \
+        --eval_steps=200 \
+        --save_steps=200 \
         --remove_unused_columns False \
         --ddp_find_unused_parameters False \
         --learning_rate 5e-5 \
