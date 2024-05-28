@@ -7,15 +7,16 @@ torchrun --nproc_per_node 1 main.py \
         --dev_query data/dev_queries.jsonl \
         --max_passage_len 512 \
         --max_query_len 128 \
-        --per_device_train_batch_size=8 \
-        --per_device_eval_batch_size=8 \
+        --per_device_train_batch_size=6 \
+        --per_device_eval_batch_size=6 \
         --num_train_epochs=10 \
         --warmup_steps=1000 \
         --logging_steps=100 \
+        --save_total_limit=1 \
         --evaluation_strategy=steps \
         --save_strategy=steps \
-        --eval_steps=1000 \
-        --save_steps=1000 \
+        --eval_steps=3000 \
+        --save_steps=3000 \
         --remove_unused_columns False \
         --ddp_find_unused_parameters False \
         --learning_rate 5e-5 \

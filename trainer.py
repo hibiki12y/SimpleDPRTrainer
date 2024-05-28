@@ -1,6 +1,7 @@
 import transformers
 import torch
 import math
+from tqdm import tqdm
 from transformers.trainer_utils import speed_metrics, EvalLoopOutput
 
 from utils import mean_pooling
@@ -39,21 +40,22 @@ class DPRTrainer(transformers.Trainer):
 
         labels = torch.arange(0,batch_size,dtype=torch.long).to(scores.device)
         loss = torch.nn.functional.cross_entropy(scores,labels)
-        print(loss, query_input_ids.shape, passage_input_ids.shape, negative_passage_input_ids.shape)
 
         if return_score:
             return (loss, scores)
 
         return (loss, None) if return_outputs else loss
     
-    def evaluate(self, eval_dataset, ignore_keys=None, metric_key_prefix= "eval"):
+    @torch.no_grad()
+    def evaluate(self, eval_dataset=None, ignore_keys=None, metric_key_prefix= "eval"):
+        eval_dataset = eval_dataset if eval_dataset is not None else self.eval_dataset
         self.model.eval()
         eval_dataloader = self.get_eval_dataloader(eval_dataset)
         total_loss = 0.0
         correct = 0
         total = 0
-        for step, inputs in enumerate(eval_dataloader):
-            loss, score = self.compute_loss(self.model, inputs, return_outputs=True)
+        for step, inputs in enumerate(tqdm(eval_dataloader,desc="Evaluating",disable=self.args.local_rank > 0)):
+            loss, score = self.compute_loss(self.model, inputs, return_score=True)
             total_loss += loss.item()
 
             labels = torch.arange(0,score.shape[0],dtype=torch.long).to(score.device)
